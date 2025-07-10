@@ -123,6 +123,67 @@ async def count_user_logins(user_id: str, year: Union[str, int]) -> str:
         return f"Error: {str(e)}"
 
 @mcp.tool()
+async def list_sql_tables() -> str:
+    """
+    List all SQL Server user tables in the connected database.
+    Returns:
+        A CSV string of table names, or an error message.
+    """
+    config = get_db_config()
+    sql = """
+    SELECT TABLE_SCHEMA, TABLE_NAME
+    FROM INFORMATION_SCHEMA.TABLES
+    WHERE TABLE_TYPE = 'BASE TABLE'
+    ORDER BY TABLE_SCHEMA, TABLE_NAME;
+    """
+    try:
+        conn = pymssql.connect(**config)
+        cursor = conn.cursor()
+        cursor.execute(sql)
+        tables = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        if not tables:
+            return "No tables found in this database."
+        # Format as CSV or nice table
+        lines = ["Schema,Table"]
+        for schema, name in tables:
+            lines.append(f"{schema},{name}")
+        return "\n".join(lines)
+    except Exception as e:
+        logger.error(f"Error listing tables: {e}")
+        return f"Error listing tables: {str(e)}"
+
+@mcp.tool()
+async def read_table_preview(table_name: str) -> str:
+    """
+    Preview up to 100 rows from a specified SQL Server table.
+    Args:
+        table_name: Name of the table to preview (optionally schema-qualified, e.g., 'dbo.my_table').
+    Returns:
+        A CSV string of up to 100 rows, or an error message.
+    """
+    config = get_db_config()
+    try:
+        # Validate the table name to prevent SQL injection
+        safe_table = validate_table_name(table_name)
+        conn = pymssql.connect(**config)
+        cursor = conn.cursor()
+        cursor.execute(f"SELECT TOP 100 * FROM {safe_table}")
+        columns = [desc[0] for desc in cursor.description]
+        rows = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        if not rows:
+            return "No data found in this table."
+        result = [",".join(map(str, row)) for row in rows]
+        return "\n".join([",".join(columns)] + result)
+    except Exception as e:
+        logger.error(f"Error reading table '{table_name}': {e}")
+        return f"Error reading table '{table_name}': {str(e)}"
+
+
+@mcp.tool()
 async def ping() -> str:
     "Returns pong."
     return "pong"
