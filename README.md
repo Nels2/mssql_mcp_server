@@ -28,7 +28,7 @@ Add to your `claude_desktop_config.json`:
   "mcpServers": {
     "mssql": {
       "command": "uvx",
-      "args": ["microsoft_sql_server_mcp"],
+      "args": ["mssql_mcp_server"],
       "env": {
         "MSSQL_SERVER": "localhost",
         "MSSQL_DATABASE": "your_database",
