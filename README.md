@@ -8,6 +8,8 @@
 </a>
 
 A Model Context Protocol (MCP) server for secure SQL Server database access through Claude Desktop.
+This was only forked so I can easily convert it to FastMCP and add my own specific tools for the Accounting MSSQL Software I am currently working with.
+You can remove my custom routing/defs and add your own with whatever fits your MSSQL DB. 
 
 ## Features
 
