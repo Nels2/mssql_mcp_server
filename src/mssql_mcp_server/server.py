@@ -3,15 +3,16 @@ import re
 import logging
 import pymssql
 from mcp.server.fastmcp import FastMCP
+from typing import Union
 
 # Set up logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
-logger = logging.getLogger("mssql_mcp_server")
+logger = logging.getLogger("mssql_mcp_prologue90")
 
-mcp = FastMCP("mssql-mcp-server")
+mcp = FastMCP("mssql-mcp-prologue-p90")
 
 def validate_table_name(table_name: str) -> str:
     """Validate and escape table name to prevent SQL injection."""
@@ -42,7 +43,7 @@ def get_db_config():
         "port": int(os.getenv("MSSQL_PORT", "1433")),
     }
     encrypt_str = os.getenv("MSSQL_ENCRYPT", "false")
-    config["encrypt"] = encrypt_str.lower() == "true"
+    #config["encrypt"] = encrypt_str.lower() == "true"
     use_windows_auth = os.getenv("MSSQL_WINDOWS_AUTH", "false").lower() == "true"
     if use_windows_auth:
         if not config["database"]:
@@ -151,7 +152,7 @@ async def report_trial_balance_by_seg_ref(start_date: str, end_date: str, accoun
         return f"Error: {str(e)}"
 
 @mcp.tool()
-async def count_user_logins(user_id: str, year: str) -> str:
+async def count_user_logins(user_id: str, year: Union[str, int]) -> str:
     """
     Count how many times a user_id appears in am_user_security_log in a given year.
     Args:
@@ -160,12 +161,13 @@ async def count_user_logins(user_id: str, year: str) -> str:
     Returns:
         Number of appearances as string or error message.
     """
+    year = str(year)
     config = get_db_config()
     sql = """
     SELECT COUNT(*) AS appearances
     FROM am_user_security_log
     WHERE user_id = %s
-    AND YEAR(event_time) = %s;
+    AND YEAR(date_time) = %s;
     """
     try:
         conn = pymssql.connect(**config)
@@ -179,13 +181,12 @@ async def count_user_logins(user_id: str, year: str) -> str:
         logger.error(f"Error executing count_user_logins: {e}")
         return f"Error: {str(e)}"
 
-
-#debugger!
-#@mcp.tool()
-#async def ping() -> str:
-#    "Returns pong."
-#    return "pong"
+@mcp.tool()
+async def ping() -> str:
+    "Returns pong."
+    return "pong"
 
 
 if __name__ == "__main__":
+    #mcp.run_stdio()
     mcp.run(transport='stdio')
