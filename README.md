@@ -1,11 +1,7 @@
-# Microsoft SQL Server MCP Server
+# Microsoft SQL Server MCP Server - rewritten
 
-[![PyPI](https://img.shields.io/pypi/v/microsoft_sql_server_mcp)](https://pypi.org/project/microsoft_sql_server_mcp/)
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
-<a href="https://glama.ai/mcp/servers/29cpe19k30">
-  <img width="380" height="200" src="https://glama.ai/mcp/servers/29cpe19k30/badge" alt="Microsoft SQL Server MCP server" />
-</a>
 
 A Model Context Protocol (MCP) server for secure SQL Server database access through Claude Desktop.
 This was only forked so I can easily convert it to FastMCP and add my own specific tools for the Accounting MSSQL Software I am currently working with.
