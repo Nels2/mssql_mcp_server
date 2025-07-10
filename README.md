@@ -94,7 +94,7 @@ Then in `claude_desktop_config.json`:
 
 ### Development
 ```bash
-git clone https://github.com/RichardHan/mssql_mcp_server.git
+git clone https://github.com/Nels2/mssql_mcp_server.git
 cd mssql_mcp_server
 pip install -e .
 ```
